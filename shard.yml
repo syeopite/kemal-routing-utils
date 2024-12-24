@@ -1,0 +1,13 @@
+name: kemal-routing-utils
+version: 0.1.0
+
+authors:
+  - syeopite <syeopite@syeopite.dev>
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+
+crystal: '>= 1.14.0'
+
+license: MIT

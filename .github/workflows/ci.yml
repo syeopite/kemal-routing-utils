@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Every day at 00:00
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches: "*"
+    paths-ignore:
+      - "*.md"
+      - LICENCE
+      - .editorconfig
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    name: "test - crystal: ${{ matrix.crystal }}, stable: ${{ matrix.stable }}"
+
+    continue-on-error: ${{ !matrix.stable }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        stable: [true]
+        crystal: [latest, nightly]
+        include:
+          - crystal: nightly
+            stable: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1.8.2
+        with:
+          crystal: ${{ matrix.crystal }}
+
+      - name: Install dependencies
+        run: shards install
+
+      - name: Run tests
+        run: crystal spec --error-trace
+
+      - name: Check formatting
+        run: crystal tool format --check
